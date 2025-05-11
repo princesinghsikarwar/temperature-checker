@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Weather App</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #83a4d4, #b6fbff);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .weather-box {
+      background-color: white;
+      border-radius: 16px;
+      padding: 30px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      text-align: center;
+      width: 300px;
+    }
+
+    input[type="text"] {
+      width: 80%;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      margin-bottom: 15px;
+      font-size: 16px;
+    }
+
+    button {
+      background-color: #007BFF;
+      color: white;
+      padding: 10px 16px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    .temperature {
+      font-size: 24px;
+      margin-top: 20px;
+      font-weight: bold;
+    }
+
+    .error {
+      color: red;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="weather-box">
+    <h2>Check Weather</h2>
+    <input type="text" id="locationInput" placeholder="Enter city name..." />
+    <button onclick="getWeather()">Get Temperature</button>
+    <div class="temperature" id="temperatureOutput"></div>
+    <div class="error" id="errorOutput"></div>
+  </div>
+
+  <script>
+    async function getWeather() {
+      const apiKey = "2e8ae0c14a1942bf84e144835251105";
+      const location = document.getElementById("locationInput").value.trim();
+      const temperatureOutput = document.getElementById("temperatureOutput");
+      const errorOutput = document.getElementById("errorOutput");
+
+      temperatureOutput.textContent = "";
+      errorOutput.textContent = "";
+
+      if (!location) {
+        errorOutput.textContent = "Please enter a location.";
+        return;
+      }
+
+      try {
+        const response = await fetch(
+          `http://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${encodeURIComponent(location)}&aqi=no`
+        );
+        
+        if (!response.ok) {
+          throw new Error("City not found or API error.");
+        }
+
+        const data = await response.json();
+        const tempC = data.current.temp_c;
+        temperatureOutput.textContent = `Temperature in ${data.location.name}, ${data.location.country}: ${tempC}°C`;
+      } catch (error) {
+        errorOutput.textContent = error.message;
+      }
+    }
+  </script>
+</body>
+</html>
